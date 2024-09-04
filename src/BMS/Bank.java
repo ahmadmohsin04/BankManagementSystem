@@ -44,6 +44,42 @@ public class Bank {
         }
         return results;
     }
+     
+     public void updateAccount (String accountNumber , String newName , double newBalance , Double interestRate)throws AccountNotFoundException{
+         Account account = searchAccount(accountNumber);
+         account.setName(newName);
+         account.setBalance(newBalance);
+         
+         if (account instanceof SavingsAccount && interestRate!= null) {
+             ((SavingsAccount)account).setInterestRate(interestRate);
+         }
+         saveAccounts();
+     }
+     
+     public void deposit (String accountNumber , double amount) throws AccountNotFoundException{
+         Account account = searchAccount(accountNumber);
+         account.deposit(amount);
+         saveAccounts();
+     }
+     
+     public void withdraw (String accountNumber , double amount) throws AccountNotFoundException{
+         Account account = searchAccount(accountNumber);
+         account.withdraw(amount);
+         saveAccounts();
+     }
+     
+     public void transfer (String fromAccountNumber , String toAccountNumber , double amount) throws AccountNotFoundException{
+         Account fromAccount = searchAccount(fromAccountNumber);
+         Account toAccount = searchAccount(toAccountNumber);
+         fromAccount.withdraw(amount);
+         toAccount.deposit(amount);
+         saveAccounts();
+     }
+     
+     public double checkBalance (String accountNumber) throws AccountNotFoundException{
+         Account account = searchAccount(accountNumber);
+         return account.getBalance();
+     }
     
     public void saveAccounts(){
         try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
@@ -53,6 +89,8 @@ public class Bank {
             System.out.println("Error saving accounts : " + e.getMessage());
         }
     }
+    
+    
     
     public void loadAccounts(){
         try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
